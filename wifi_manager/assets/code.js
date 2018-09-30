@@ -2,7 +2,7 @@
 if (!String.prototype.format) {
   String.prototype.format = function() {
     var args = arguments;
-    return this.replace(/{(\d+)}/g, function(match, number) { 
+    return this.replace(/{(\d+)}/g, function(match, number) {
       return typeof args[number] != 'undefined'
         ? args[number]
         : match
@@ -13,7 +13,7 @@ if (!String.prototype.format) {
 
 var apList = null;
 var selectedSSID = "";
-var refreshAPInterval = null; 
+var refreshAPInterval = null;
 var checkStatusInterval = null;
 
 
@@ -40,77 +40,77 @@ function startRefreshAPInterval(){
 }
 
 $(document).ready(function(){
-	
-	
+
+
 	$("#wifi-status").on("click", ".ape", function() {
 		$( "#wifi" ).slideUp( "fast", function() {});
 		$( "#connect-details" ).slideDown( "fast", function() {});
 	});
-	
-	
+
+
 	$("#wifi-list").on("click", ".ape", function() {
 		selectedSSID = $(this).text();
 		$( "#ssid-pwd" ).text(selectedSSID);
 		$( "#wifi" ).slideUp( "fast", function() {});
 		$( "#connect" ).slideDown( "fast", function() {});
-		
+
 		//update wait screen
 		$( "#loading" ).show();
 		$( "#connect-success" ).hide();
-		$( "#connect-fail" ).hide();		
+		$( "#connect-fail" ).hide();
 	});
-	
+
 	$("#cancel").on("click", function() {
 		selectedSSID = "";
 		$( "#connect" ).slideUp( "fast", function() {});
 		$( "#wifi" ).slideDown( "fast", function() {});
 	});
-	
+
 	$("#join").on("click", function() {
 		performConnect();
 	});
-	
+
 	$("#ok-details").on("click", function() {
 		$( "#connect-details" ).slideUp( "fast", function() {});
 		$( "#wifi" ).slideDown( "fast", function() {});
-		
+
 	});
-	
+
 	$("#ok-credits").on("click", function() {
 		$( "#credits" ).slideUp( "fast", function() {});
 		$( "#app" ).slideDown( "fast", function() {});
-		
+
 	});
-	
+
 	$("#acredits").on("click", function(event) {
 		event.preventDefault();
 		$( "#app" ).slideUp( "fast", function() {});
 		$( "#credits" ).slideDown( "fast", function() {});
 	});
-	
+
 	$("#ok-connect").on("click", function() {
 		$( "#connect-wait" ).slideUp( "fast", function() {});
 		$( "#wifi" ).slideDown( "fast", function() {});
 	});
-	
+
 	$("#disconnect").on("click", function() {
 		$( "#connect-details-wrap" ).addClass('blur');
 		$( "#diag-disconnect" ).slideDown( "fast", function() {});
 	});
-	
+
 	$("#no-disconnect").on("click", function() {
 		$( "#diag-disconnect" ).slideUp( "fast", function() {});
 		$( "#connect-details-wrap" ).removeClass('blur');
 	});
-	
+
 	$("#yes-disconnect").on("click", function() {
-		
+
 		stopCheckStatusInterval();
 		selectedSSID = "";
-		
+
 		$( "#diag-disconnect" ).slideUp( "fast", function() {});
 		$( "#connect-details-wrap" ).removeClass('blur');
-		
+
 		$.ajax({
 			url: '/connect.json',
 			dataType: 'json',
@@ -120,52 +120,52 @@ $(document).ready(function(){
 		});
 
 		startCheckStatusInterval();
-		
+
 		$( "#connect-details" ).slideUp( "fast", function() {});
 		$( "#wifi" ).slideDown( "fast", function() {})
 	});
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	//first time the page loads: attempt get the connection status and start the wifi scan
 	refreshAP();
 	startCheckStatusInterval();
 	startRefreshAPInterval();
 
 
-	
-	
+
+
 });
 
 
-
+var connectInterruption = false;
 
 function performConnect(){
-	
-	//stop the status refresh. This prevents a race condition where a status 
+
+	//stop the status refresh. This prevents a race condition where a status
 	//request would be refreshed with wrong ip info from a previous connection
 	//and the request would automatically shows as succesful.
 	stopCheckStatusInterval();
-	
+
 	//stop refreshing wifi list
 	stopRefreshAPInterval();
-	
-	//reset connection 
+
+	//reset connection
 	$( "#loading" ).show();
 	$( "#connect-success" ).hide();
 	$( "#connect-fail" ).hide();
-	
+
 	$( "#ok-connect" ).prop("disabled",true);
 	$( "#ssid-wait" ).text(selectedSSID);
 	$( "#connect" ).slideUp( "fast", function() {});
 	$( "#connect-wait" ).slideDown( "fast", function() {});
-	
-	
+
+
 	var pwd = $("#pwd").val();
 	$.ajax({
 		url: '/connect.json',
@@ -176,11 +176,12 @@ function performConnect(){
 		data: { 'timestamp': Date.now()}
 	});
 
+	connectInterruption = true;
 
 	//now we can re-set the intervals regardless of result
 	startCheckStatusInterval();
 	startRefreshAPInterval();
-	
+
 }
 
 
@@ -211,7 +212,9 @@ function refreshAP(){
 			});
 			apList = data;
 			refreshAPHTML(apList);
-			
+			$('#wifi-list .spinner').hide();
+		} else {
+			$('#wifi-list .spinner').show();
 		}
 	});
 }
@@ -222,7 +225,7 @@ function refreshAPHTML(data){
 		h += '<div class="ape{0}"><div class="{1}"><div class="{2}">{3}</div></div></div>'.format(idx === array.length - 1?'':' brdb', rssiToIcon(e.rssi), e.auth==0?'':'pw',e.ssid);
 		h += "\n";
 	});
-	
+
 	$( "#wifi-list" ).html(h)
 }
 
@@ -231,6 +234,10 @@ function refreshAPHTML(data){
 
 function checkStatus(){
 	$.getJSON( "/status.json", function( data ) {
+		if (connectInterruption) {
+			connectInterruption = false;
+			return;
+		}
 		if(data.hasOwnProperty('ssid') && data['ssid'] != ""){
 			if(data["ssid"] === selectedSSID){
 				//that's a connection attempt
@@ -242,10 +249,10 @@ function checkStatus(){
 					$("#netmask").text(data["netmask"]);
 					$("#gw").text(data["gw"]);
 					$("#wifi-status").slideDown( "fast", function() {});
-					
+
 					//unlock the wait screen if needed
 					$( "#ok-connect" ).prop("disabled",false);
-					
+
 					//update wait screen
 					$( "#loading" ).hide();
 					$( "#connect-success" ).show();
@@ -258,13 +265,13 @@ function checkStatus(){
 					$("#ip").text('0.0.0.0');
 					$("#netmask").text('0.0.0.0');
 					$("#gw").text('0.0.0.0');
-					
+
 					//don't show any connection
 					$("#wifi-status").slideUp( "fast", function() {});
-					
+
 					//unlock the wait screen
 					$( "#ok-connect" ).prop("disabled",false);
-					
+
 					//update wait screen
 					$( "#loading" ).hide();
 					$( "#connect-fail" ).show();

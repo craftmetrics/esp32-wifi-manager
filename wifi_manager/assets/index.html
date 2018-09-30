@@ -7,14 +7,15 @@
 		<script src="/jquery.js"></script>
 		<link rel="stylesheet" href="/style.css">
 		<script src="/code.js"></script>
-		<title>esp32-wifi-manager</title>
+		<title>CM03 Wifi Setup</title>
 	</head>
 	<body>
 		<div id="app">
 			<div id="app-wrap">
 				<div id="wifi">
 					<header>
-						<h1>Wi-Fi</h1>
+						<img class="cm-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAO3RSTlMA/AP4BxPk0JqDWhe/8OzEfW1BPOjgyKhoVPTYtTUwDwuvik0b3LqjekXMlJB3ItR0SSYfnnFhOSwqUHiPta8AAAXVSURBVGjepZqLWuIwEIXbUu5Qb4iACKhcBFS84Lpr3v+9tlTav5A205bsfrtKJjmZmeTMZIKlN9d6rFnFmhM11zELWiNPPVhOfgTra7aqBm11uxBEPyuqpJ6yo7A4W0Xt3XJMouVbZft/evl1aamSHbSSejZjuGe+Hj6IerTcfIr01F4TW12XzcI3PkYgOBhl0gUre0qFIH2zIg+x5UwRzQByw8gbyxFUZj1dF2ERo89I79NyDJJXiuabbZtdlfI1ilwYMaaVQBJd3gQUhq7BaAl7cC9JuwTFiHEZM8DIqEgdjMj5zUwo7gpF6kaMdzBAuc+kyDkYVdck2LwGJDgqeFHC+FsSDcw+DxFqcRP/lQ3WQpG1EeNPTOOx9cVvZyfzCcbqRMYa/PNZa8HAFxaXvPE7Zj5Bssakf/zYY41vI9D2KyMFPrk3YlyymIX/q//3m09ujEN/ZD7BdVjV4dTIO2Y8y8onfQQfQ0FnFQHPDUOfs/KJ0w3ngxPjBiOYmijVHmVTRHWgERZpUMXJxCd4RLdqGVK+4vNcfILkXSS4cg46LiLwGiBxgX8DTLpExLQcWzUOBd2Nsvd7bpw4do4i2jJ0UTTWVMFeJj6pCPnJuBJKfkUz4RWclcQntsIGAlFDWs5R3yJU8pkuOkU+QXYZSt5OtL4XZUMtqXwCvckgVQRxCiDJfIKdhR3MSUzI9dg8WhchR2zTdqi1vtXPQhCy/AQ+uZODp1MNZ1qkzUQ0gu5kPtEDFqeBHg5b+/VozBMYm0mWhKahbORBcYO9BYsX4RP9yPkDho7l7IYE/zaOEyNAhgY+kQNP9y78eFJXsQiQmtpUmhlBXtus2V68T113PHqb7X7HtQX4RHPjnlqCwd7tplJCDVvNxsX4RDsPZKY2/3F+4hiPMT75yALCtZpJUSIxu5v4KVmuCwzcMmBmGgRciE/0tKONxQ5UWiNFEgOf5EP56GIm3FP6OpaETyiOZEdxXrzdvHZ8AwyJY0QYLf7kQbGmD50DReZL6xjjYyClfDJMs7Gtdmx/hsFsfn73yy5pfLItgrGf0m3eXV5efUz2sGl8QrJZCIcf9atS5eAakzA8X/0t0ZxbMIZMWLDJl/BBMp98nwIg8AlE2yisoM4n3UR/9PyupVCLE1MnTtA3CyZa93fw7dFJupwl8gkYV6WgeFkhm8yvyFsyn8AFnt8T9JbzojAHIZrLa7wIG2atJdVyiipyjyLkgIf1WhXVZnKpIvMJlbtSaiyVm8wnZP9igVvOZOETPawCsdf2M388W7JQrmOJ9Tiif24+2aBIwksBm4L/M4dmKqAmPnGowNHY5wX4hMsF3SP21WALCEnySXzCdQhb1jJV7NOsQVKs1zOY1nK7uXNxUn7srFcBIkobW+6OfmyqFCfzCekL/M+9jQRXaodjOlNdkT7d55ZDIpArjS2b8xN3f3Pm+Dm8cnB7yc4nc0ZodSIeG+L1EJsSaUE+oSDGjY9KcY7EaVJN4xMcRrDkStVWYSMZKMQnFC+pWOi1wJpc2ikZ+ARCoZigV5Dks3Jm2PJwAadUyzpEniTc6XyCg1Ns2exoJQCZT34Q1SrPJK3aax1HJZVPJEIte8l7iH3HGZX5xINPEqtxpY+ktxJqjjKfpD+bNz3t3YtbBltfeAIVngNc/yrBKUkpww6lpyHWKZTGt0nFS9NphF2hcOnCMmAd3MkwtcwnqwQhykUQoUMHORTkrI8eCU+gvI9z5mIsbC2IMukeaYkhlLrivtW5Nrs1w1safCI+gZJFkJguf6dzGxvhxSPvVyrW8QR1tX7rvdQ2wc8okp9PdK8wo/6Dap32lQoK7Ujbvw0zeNxRtcUJfKKlEil1RTam8JUKJ0u5V9mJGKSphb9SQbuwdWX8DzxiooFPCGpSKtCNvI3rh/hDz9H5ZlPVzVy97M3wewC36sMApvdi3CajWONei1zLGzZcyzFQXv3pPGhPddyWCcZ67b/UhvP79dvP9LiE9x8GnDSmtqwFCwAAAABJRU5ErkJggg==" width=50 height=50>
+						<h1>CM03 Wifi Setup</h1>
 					</header>
 					<div id="wifi-status">
 						<h2>Connected to:</h2>
@@ -24,12 +25,13 @@
 					</div>
 					<h2>Choose a network...</h2>
 					<section id="wifi-list">
+						<div class="spinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>
 					</section>
-					<div id="pwrdby"><em>Powered by </em><a id="acredits" href="#"><strong>esp32-wifi-manager</strong></a>.</div>
+					<div id="pwrdby"><a id="acredits" href="#">About</a></div>
 				</div>
 				<div id="connect">
 					<header>
-						<h1>Enter Password</h1>
+						<h1>Configuration</h1>
 					</header>
 					<h2>Password for <span id="ssid-pwd"></span></h2>
 					<section>
@@ -48,14 +50,15 @@
 					<section>
 						<div id="loading">
 							<div class="spinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>
-							<p class="tctr">You may lose wifi access while the esp32 recalibrates its radio. Please wait until your device automatically reconnects. This can take up to 30s.</p>
+							<p class="tctr">Please wait...</p>
 						</div>
 						<div id="connect-success">
-							<h3 class="gr">Success!</h3>
+							<h3 class="gr">Connection Established</h3>
+							<p>Your device should now reboot.<br>You can close this window.</p>
 						</div>
 						<div id="connect-fail">
-							<h3 class="rd">Connection failed</h3>
-							<p class="tctr">Please double-check wifi password if any and make sure the access point has good signal.</p>
+							<h3 class="rd">Connection Failed</h3>
+							<p class="tctr">Please double-check the wifi password if any and make sure the access point is in range.</p>
 						</div>
 					</section>
 					<div class="buttons">
@@ -82,7 +85,7 @@
 						<div class="buttons">
 							<input id="ok-details" type="button" value="OK" class="ctr" />
 						</div>
-					</div>					
+					</div>
 					<div id="diag-disconnect" class="diag-box">
 						<div class="diag-box-win">
 							<p>Are you sure you would like to disconnect from this wifi?</p>

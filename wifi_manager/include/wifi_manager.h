@@ -38,11 +38,6 @@ extern "C" {
 #endif
 
 /**
- * @brief If WIFI_MANAGER_DEBUG is defined, additional debug information will be sent to the standard output.
- */
-#define WIFI_MANAGER_DEBUG	1
-
-/**
  * @brief Defines the maximum size of a SSID name. 32 is IEEE standard.
  * @warning limit is also hard coded in wifi_config_t. Never extend this value.
  */
@@ -73,14 +68,6 @@ extern "C" {
 /** @brief Defines visibility of the access point. 0: visible AP. 1: hidden */
 #define DEFAULT_AP_SSID_HIDDEN 		0
 
-/** @brief Defines access point's name. */
-#define DEFAULT_AP_SSID 			"esp32"
-
-/** @brief Defines access point's password.
- *	@warning In the case of an open access point, the password must be a null string "" or "\0" if you want to be verbose but waste one byte.
- */
-#define DEFAULT_AP_PASSWORD 		"esp32pwd"
-
 /** @brief Defines access point's bandwidth.
  *  Value: WIFI_BW_HT20 for 20 MHz  or  WIFI_BW_HT40 for 40 MHz
  *  20 MHz minimize channel interference but is not suitable for
@@ -94,13 +81,13 @@ extern "C" {
  *  For 20 MHz: 1, 6 or 11 in USA and 1, 5, 9 or 13 in most parts of the world
  *  For 40 MHz: 3 in USA and 3 or 11 in most parts of the world
  */
-#define DEFAULT_AP_CHANNEL 			5
+#define DEFAULT_AP_CHANNEL 			6
 
 /** @brief Defines access point's maximum number of clients. */
 #define AP_MAX_CONNECTIONS 	4
 
 /** @brief Defines access point's beacon interval. 100ms is the recommended default. */
-#define AP_BEACON_INTERVAL 	100
+#define AP_BEACON_INTERVAL 	25
 
 /** @brief Defines if esp32 shall run both AP + STA when connected to another AP.
  *  Value: 0 will have the own AP always on (APSTA mode)
@@ -146,7 +133,7 @@ typedef enum update_reason_code_t {
 /**
  * The actual WiFi settings in use
  */
-struct wifi_settings_t{
+typedef struct {
 	uint8_t ap_ssid[MAX_SSID_SIZE];
 	uint8_t ap_pwd[MAX_PASSWORD_SIZE];
 	uint8_t ap_channel;
@@ -154,10 +141,7 @@ struct wifi_settings_t{
 	wifi_bandwidth_t ap_bandwidth;
 	bool sta_only;
 	wifi_ps_type_t sta_power_save;
-	bool sta_static_ip;
-	tcpip_adapter_ip_info_t sta_static_ip_config;
-};
-extern struct wifi_settings_t wifi_settings;
+} wifi_settings_t;
 
 
 /**
@@ -189,6 +173,7 @@ esp_err_t wifi_manager_save_sta_config();
 bool wifi_manager_fetch_wifi_sta_config();
 
 wifi_config_t* wifi_manager_get_wifi_sta_config();
+esp_err_t wifi_manager_clear_sta_config();
 
 
 /**
@@ -203,6 +188,8 @@ wifi_config_t* wifi_manager_get_wifi_sta_config();
  */
 esp_err_t wifi_manager_event_handler(void *ctx, system_event_t *event);
 
+
+wifi_config_t * wifi_manager_get_sta_config();
 
 /**
  * @brief requests a connection to an access point that will be process in the main task thread.
