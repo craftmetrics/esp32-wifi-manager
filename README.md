@@ -1,3 +1,7 @@
+# What is this fork?
+* It's currently for our internal use in our Craft Metrics firmwares, but you are welcome to use parts of it if they are useful to you or help us improve this repo for general public use
+* It depends on [esp32-dns-server](https://github.com/craftmetrics/esp32-dns-server) for captive portal functionality
+
 # What is esp32-wifi-manager?
 *esp32-wifi-manager* is an esp32 program that enables easy management of wifi networks through a web application.
 
