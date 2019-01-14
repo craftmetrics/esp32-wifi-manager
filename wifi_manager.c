@@ -326,7 +326,7 @@ void wifi_manager( void * pvParameters ) {
 		.ssid = 0,
 		.bssid = 0,
 		.channel = 0,
-		.show_hidden = true
+		.show_hidden = false
 	};
 
 
