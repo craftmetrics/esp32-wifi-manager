@@ -164,7 +164,7 @@ char* wifi_manager_get_ip_info_json();
 /**
  * @brief saves the current STA wifi config to flash ram storage.
  */
-esp_err_t wifi_manager_save_sta_config();
+esp_err_t wifi_manager_save_sta_config(wifi_config_t* config);
 
 /**
  * @brief fetch a previously STA wifi config in the flash ram storage.
