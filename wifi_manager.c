@@ -519,6 +519,7 @@ void wifi_manager( void * pvParameters ) {
 			/* safe guard against overflow */
 			if(ap_num > MAX_AP_NUM) ap_num = MAX_AP_NUM;
 
+			ESP_ERROR_CHECK(esp_wifi_disconnect());
 			ESP_ERROR_CHECK(esp_wifi_scan_start(&scan_config, true));
 			ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&ap_num, accessp_records));
 
