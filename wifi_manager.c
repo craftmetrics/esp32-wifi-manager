@@ -129,14 +129,14 @@ void wifi_manager_generate_ip_info_json(update_reason_code_t update_reason_code)
 
 		if(update_reason_code == UPDATE_CONNECTION_OK){
 			/* rest of the information is copied after the ssid */
-			tcpip_adapter_ip_info_t ip_info;
-			ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
+            esp_netif_ip_info_t ip_info;
+            esp_netif_get_ip_info(esp_netif_get_default_netif(), &ip_info);
 			char ip[IP4ADDR_STRLEN_MAX]; /* note: IP4ADDR_STRLEN_MAX is defined in lwip */
 			char gw[IP4ADDR_STRLEN_MAX];
 			char netmask[IP4ADDR_STRLEN_MAX];
-			strcpy(ip, ip4addr_ntoa(&ip_info.ip));
-			strcpy(netmask, ip4addr_ntoa(&ip_info.netmask));
-			strcpy(gw, ip4addr_ntoa(&ip_info.gw));
+			strcpy(ip, ip4addr_ntoa((ip4_addr_t*)&ip_info.ip));
+			strcpy(netmask, ip4addr_ntoa((ip4_addr_t*)&ip_info.netmask));
+			strcpy(gw, ip4addr_ntoa((ip4_addr_t*)&ip_info.gw));
 
 			snprintf( (ip_info_json + strlen(ip_info_json)), JSON_IP_INFO_SIZE, ip_info_json_format,
 					ip,
@@ -219,30 +219,30 @@ char* wifi_manager_get_ap_list_json(){
 }
 
 
-esp_err_t wifi_manager_event_handler(void *ctx, system_event_t *event)
+static void wifi_manager_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
-    switch(event->event_id) {
+    switch(event_id) {
 
-    case SYSTEM_EVENT_AP_START:
+    case WIFI_EVENT_AP_START:
     	xEventGroupSetBits(wifi_manager_event_group, WIFI_MANAGER_AP_STARTED);
 		break;
 
-    case SYSTEM_EVENT_AP_STACONNECTED:
+    case WIFI_EVENT_AP_STACONNECTED:
 		xEventGroupSetBits(wifi_manager_event_group, WIFI_MANAGER_AP_STA_CONNECTED_BIT);
 		break;
 
-    case SYSTEM_EVENT_AP_STADISCONNECTED:
+    case WIFI_EVENT_AP_STADISCONNECTED:
     	xEventGroupClearBits(wifi_manager_event_group, WIFI_MANAGER_AP_STA_CONNECTED_BIT);
 		break;
 
-    case SYSTEM_EVENT_STA_START:
+    case WIFI_EVENT_STA_START:
         break;
 
-	case SYSTEM_EVENT_STA_GOT_IP:
+	case IP_EVENT_STA_GOT_IP:
         xEventGroupSetBits(wifi_manager_event_group, WIFI_MANAGER_WIFI_CONNECTED_BIT);
         break;
 
-	case SYSTEM_EVENT_STA_DISCONNECTED:
+	case WIFI_EVENT_STA_DISCONNECTED:
 		xEventGroupSetBits(wifi_manager_event_group, WIFI_MANAGER_STA_DISCONNECT_BIT);
 		xEventGroupClearBits(wifi_manager_event_group, WIFI_MANAGER_WIFI_CONNECTED_BIT);
         break;
@@ -250,7 +250,6 @@ esp_err_t wifi_manager_event_handler(void *ctx, system_event_t *event)
 	default:
         break;
     }
-	return ESP_OK;
 }
 
 
@@ -313,13 +312,26 @@ void wifi_manager( void * pvParameters ) {
 	ip_info_json = (char*)malloc(sizeof(char) * JSON_IP_INFO_SIZE);
 	wifi_manager_clear_ip_info_json();
 
-	/* initialize the tcp stack */
-	tcpip_adapter_init();
-
     /* event handler and event group for the wifi driver */
 	wifi_manager_event_group = xEventGroupCreate();
-    //ESP_ERROR_CHECK(esp_event_loop_init(wifi_manager_event_handler, NULL));
-	esp_event_loop_set_cb(wifi_manager_event_handler, NULL);
+
+	// Create interfaces
+	esp_netif_t* ap_if = esp_netif_create_default_wifi_ap();
+	esp_netif_t* sta_if = esp_netif_create_default_wifi_sta();
+
+    esp_event_handler_instance_t instance_any_id;
+    esp_event_handler_instance_t instance_got_ip;
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                        ESP_EVENT_ANY_ID,
+                                                        &wifi_manager_event_handler,
+                                                        NULL,
+                                                        &instance_any_id));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                        IP_EVENT_STA_GOT_IP,
+                                                        &wifi_manager_event_handler,
+                                                        NULL,
+                                                        &instance_got_ip));
+
 
     /* wifi scanner config */
 	wifi_scan_config_t scan_config = {
@@ -339,25 +351,25 @@ void wifi_manager( void * pvParameters ) {
 
 	/* start the softAP access point */
 	/* stop DHCP server */
-	ESP_ERROR_CHECK(tcpip_adapter_dhcps_stop(TCPIP_ADAPTER_IF_AP));
+	ESP_ERROR_CHECK(esp_netif_dhcps_stop(ap_if));
 
 	/* assign a static IP to the AP network interface */
-	tcpip_adapter_ip_info_t info;
+	esp_netif_ip_info_t info;
 	memset(&info, 0x00, sizeof(info));
 	IP4_ADDR(&info.ip, 192, 168, 1, 1);
 	IP4_ADDR(&info.gw, 192, 168, 1, 1);
 	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
-	ESP_ERROR_CHECK(tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_AP, &info));
+	ESP_ERROR_CHECK(esp_netif_set_ip_info(ap_if, &info));
 
 	/* start dhcp server */
-	ESP_ERROR_CHECK(tcpip_adapter_dhcps_start(TCPIP_ADAPTER_IF_AP));
+	ESP_ERROR_CHECK(esp_netif_dhcps_start(ap_if));
 
-	tcpip_adapter_dhcp_status_t status;
+	esp_netif_dhcp_status_t status;
 	/* start DHCP client if not started*/
 	ESP_LOGD(TAG, "wifi_manager: Start DHCP client for STA interface. If not already running");
-	ESP_ERROR_CHECK(tcpip_adapter_dhcpc_get_status(TCPIP_ADAPTER_IF_STA, &status));
-	if (status!=TCPIP_ADAPTER_DHCP_STARTED)
-		ESP_ERROR_CHECK(tcpip_adapter_dhcpc_start(TCPIP_ADAPTER_IF_STA));
+	ESP_ERROR_CHECK(esp_netif_dhcpc_get_status(sta_if, &status));
+	if (status!=ESP_NETIF_DHCP_STARTED)
+		ESP_ERROR_CHECK(esp_netif_dhcpc_start(sta_if));
 
 
 

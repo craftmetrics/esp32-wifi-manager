@@ -186,7 +186,8 @@ esp_err_t wifi_manager_clear_sta_config();
  * SYSTEM_EVENT_STA_GOT_IP
  * SYSTEM_EVENT_STA_DISCONNECTED
  */
-esp_err_t wifi_manager_event_handler(void *ctx, system_event_t *event);
+
+static void wifi_manager_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
 
 wifi_config_t * wifi_manager_get_sta_config();

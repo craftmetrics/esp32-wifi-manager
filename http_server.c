@@ -42,7 +42,6 @@ function to process requests, decode URLs, serve files, etc. etc.
 #include "esp_event_loop.h"
 #include "nvs_flash.h"
 #include "esp_log.h"
-#include "driver/gpio.h"
 #include "mdns.h"
 #include "lwip/api.h"
 #include "lwip/err.h"
