@@ -175,21 +175,6 @@ bool wifi_manager_fetch_wifi_sta_config();
 wifi_config_t* wifi_manager_get_wifi_sta_config();
 esp_err_t wifi_manager_clear_sta_config();
 
-
-/**
- * @brief A standard wifi event manager.
- * The following event are being monitoring and will set/clear group events:
- * SYSTEM_EVENT_AP_START
- * SYSTEM_EVENT_AP_STACONNECTED
- * SYSTEM_EVENT_AP_STADISCONNECTED
- * SYSTEM_EVENT_STA_START
- * SYSTEM_EVENT_STA_GOT_IP
- * SYSTEM_EVENT_STA_DISCONNECTED
- */
-
-static void wifi_manager_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
-
-
 wifi_config_t * wifi_manager_get_sta_config();
 
 /**
